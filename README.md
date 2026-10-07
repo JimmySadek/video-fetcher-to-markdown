@@ -83,6 +83,9 @@ in one local file.
 - Plain text, JSON, SRT, and WebVTT export
 - Bounded network requests, useful errors, and optional metadata-free capture
 - No API keys and no hosted service
+- **Other sites (new):** Instagram, TikTok, X, Vimeo, Facebook and anything else `yt-dlp` supports, plus YouTube videos without captions and local files, transcribed on your machine with Whisper
+- **Frames (new):** a contact sheet of the video for reading on-screen text, by default for videos up to 3 minutes
+- **Login walls (new):** a clear exit code and a browser fallback for sites such as Instagram; your browser login is used only when you ask
 
 ## Installation
 
@@ -271,6 +274,40 @@ after `--`; put all options before that separator.
 
 Lookalike hosts such as `youtube.com.example.org` are rejected.
 
+## Other video sites
+
+`scripts/fetch_media.py` covers sites without YouTube captions. It downloads the
+media with `yt-dlp`, converts the audio with `ffmpeg`, transcribes it locally with a
+Whisper command-line tool, and saves the same kind of note, with a contact sheet of
+frames for short videos.
+
+```bash
+python3 scripts/fetch_media.py --check-deps
+python3 scripts/fetch_media.py --hint "Claude, HyperFrames" -- "https://www.tiktok.com/@user/video/123"
+python3 scripts/fetch_media.py --stdout --format txt --timestamps -- "/path/to/clip.mp4"
+```
+
+Install the tools once, outside your projects (none are installed automatically):
+
+```bash
+brew install ffmpeg yt-dlp          # or your system package manager
+pipx install mlx-whisper            # Apple Silicon (fast, uses the GPU)
+pipx install openai-whisper         # other machines
+```
+
+The first transcription downloads the Whisper model (about 1.6 GB for
+large-v3-turbo). `--hint` passes names and terms Whisper should expect;
+`--lang` fixes the spoken language; `--model` and `--engine` choose the model and tool.
+
+| Exit | Meaning |
+|------|---------|
+| `4` | The site needs a login or blocked the download. Update `yt-dlp` if the message says it is old; use the browser fallback (`scripts/browser_media_links.js`, described in `SKILL.md`); or pass `--cookies-from-browser BROWSER` yourself to reuse your browser login. |
+
+Notes are named `<date>_<title>_[<platform>-<id>].md`; the contact sheet sits next to
+it as `<same name>.frames.jpg`. Downloads go to a temporary folder that is deleted
+afterwards (`--keep-media` keeps a copy next to the note). Whisper transcripts are
+machine transcriptions: names can be misheard and music can produce stray words.
+
 ## Compatibility
 
 The repository follows the portable `SKILL.md` format. The same install command
@@ -288,8 +325,9 @@ agents. Manual users can run the Python script directly.
   twice `--timeout`; individual HTTP requests each have their own timeout.
 - Videos must expose captions. Private, restricted, or caption-disabled videos
   may fail.
-- It does not download video/audio, run Whisper, identify speakers, or inspect
-  visuals. YouTube machine translation is opt-in.
+- `fetch_transcript.py` does not download media. `fetch_media.py` does, then runs
+  Whisper locally and makes a contact sheet; neither identifies speakers or analyses
+  visuals beyond that sheet. YouTube machine translation is opt-in.
 - Captions may contain recognition errors; the archive preserves source text
   rather than silently correcting, summarizing, or treating it as instructions.
 
@@ -303,6 +341,7 @@ agents. Manual users can run the Python script directly.
 | Disabled, private, or restricted captions | Check that the video is publicly playable and captions are accessible. No transcript is fabricated. |
 | Timeout | Check connectivity or increase `--timeout`. This is a per-request connect/read limit, not a whole-command deadline. |
 | No description/title metadata | Captions can still succeed. Check `metadata_source`; use `--no-metadata` when metadata is unnecessary. |
+| Site needs a login / exit `4` | See [Other video sites](#other-video-sites): update `yt-dlp`, use the browser fallback, or pass `--cookies-from-browser` yourself. |
 | Existing file / exit `3` | Choose a different `--output` or explicitly approve replacement with `--force`. |
 | Save error | Check the directory, permissions, and available disk space. Replacing a symbolic-link destination is refused. |
 

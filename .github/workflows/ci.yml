@@ -38,4 +38,4 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Compile runtime
-        run: python -m py_compile scripts/fetch_transcript.py
+        run: python -m py_compile scripts/fetch_transcript.py scripts/fetch_media.py
