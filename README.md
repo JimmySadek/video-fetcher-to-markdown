@@ -331,6 +331,12 @@ it as `<same name>.frames.jpg`. Downloads go to a temporary folder that is delet
 afterwards (`--keep-media` keeps a copy next to the note). Whisper transcripts are
 machine transcriptions: names can be misheard and music can produce stray words.
 
+## Works with Kit to Clip
+
+[Kit to Clip](https://github.com/JimmySadek/kit-to-clip) turns a brand kit into finished, on-brand videos. Say
+"make it like this video" with a link, and it uses this skill to read the reference (speech, frames, cuts and beats),
+then builds a style of your own from its principles. Kit to Clip asks before installing this skill.
+
 ## Compatibility
 
 The repository follows the portable `SKILL.md` format. The same install command
