@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import argparse
 import errno
-import importlib
+import importlib.util
 import json
 import math
 import os
@@ -71,9 +71,8 @@ def check_dependencies() -> list[dict]:
         },
     ]
     for dep in python_deps:
-        try:
-            importlib.import_module(dep["module"])
-        except ImportError:
+        # Look the package up without importing (running) it.
+        if importlib.util.find_spec(dep["module"]) is None:
             missing.append(
                 {
                     "name": dep["name"],
