@@ -9,7 +9,9 @@ description: >-
   on-screen text, or an archival note. A bare video link defaults to saving a note.
 ---
 
-# YouTube Fetcher
+# Video Fetcher to Markdown
+
+Formerly YouTube Fetcher. The skill name stays `youtube-fetcher` so existing installs keep updating.
 
 Two scripts, one for each kind of source:
 
@@ -147,7 +149,8 @@ and translation status alongside the file.
   including user annotations. To retain two languages or versions, use distinct
   `--output` paths.
 - Output precedence: `--stdout` writes nothing; otherwise `--output`, then
-  `--output-dir`, then `YOUTUBE_FETCHER_DIR`, then `~/yt_transcripts/`. Do not choose
+  `--output-dir`, then `VIDEO_FETCHER_DIR` (or the older `YOUTUBE_FETCHER_DIR`), then
+  `~/yt_transcripts/`. Do not choose
   a different directory silently.
 - If dependencies are missing, use `--check-deps` and the isolated setup in
   [README.md](README.md#install-runtime-dependencies). Install only within the

@@ -38,13 +38,14 @@ class SkillBundleTests(unittest.TestCase):
             if line and not line[0].isspace()
         ]
         self.assertEqual(keys, ["name", "description"])
-        self.assertIn("name: youtube-fetcher", frontmatter)
+        # The internal name never changes: `npx skills update` re-adds installs by this name.
+        self.assertIn("name: youtube-fetcher\n", frontmatter + "\n")
         for trigger in ("Obsidian", "knowledge-base", "transcript", "Markdown"):
             self.assertIn(trigger, frontmatter)
 
     def test_openai_metadata_matches_skill(self):
         metadata = (REPO_ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
-        self.assertIn('display_name: "YouTube Fetcher"', metadata)
+        self.assertIn('display_name: "Video Fetcher to Markdown"', metadata)
         self.assertIn("$youtube-fetcher", metadata)
 
     def test_installer_verifier_is_executable(self):

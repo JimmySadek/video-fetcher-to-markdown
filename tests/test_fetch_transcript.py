@@ -1,4 +1,4 @@
-"""Deterministic contract tests for the YouTube Fetcher runtime."""
+"""Deterministic contract tests for the Video Fetcher to Markdown runtime (YouTube captions script)."""
 
 from __future__ import annotations
 
@@ -65,6 +65,13 @@ class ExtractVideoIdTests(unittest.TestCase):
 
 
 class OutputDirectoryTests(unittest.TestCase):
+    def test_new_setting_wins_and_the_old_name_still_works(self):
+        new, old = youtube_fetcher.OUTPUT_DIR_ENV, youtube_fetcher.LEGACY_OUTPUT_DIR_ENV
+        self.assertEqual((new, old), ("VIDEO_FETCHER_DIR", "YOUTUBE_FETCHER_DIR"))
+        self.assertEqual(youtube_fetcher.resolve_output_directory(None, None, {old: "/old"}), Path("/old"))
+        self.assertEqual(youtube_fetcher.resolve_output_directory(None, None, {old: "/old", new: "/new"}), Path("/new"))
+        self.assertEqual(youtube_fetcher.resolve_output_directory(None, None, {new: " "}), Path.home() / "yt_transcripts")
+
     def test_output_precedence(self):
         env = {youtube_fetcher.OUTPUT_DIR_ENV: "/env/notes"}
         self.assertEqual(

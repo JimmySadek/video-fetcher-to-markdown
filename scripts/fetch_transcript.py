@@ -37,7 +37,8 @@ EXIT_MISSING_DEPS = 2
 EXIT_DUPLICATE_SKIPPED = 3
 
 DEFAULT_OUTPUT_DIRNAME = "yt_transcripts"
-OUTPUT_DIR_ENV = "YOUTUBE_FETCHER_DIR"
+OUTPUT_DIR_ENV = "VIDEO_FETCHER_DIR"
+LEGACY_OUTPUT_DIR_ENV = "YOUTUBE_FETCHER_DIR"  # the name before v2.0.0; still honoured
 DEFAULT_TIMEOUT = 15.0
 VIDEO_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{11}$")
 YOUTUBE_HOSTS = {
@@ -220,7 +221,7 @@ def resolve_output_directory(
         return Path(output_dir).expanduser()
 
     env = os.environ if environ is None else environ
-    env_dir = env.get(OUTPUT_DIR_ENV, "").strip()
+    env_dir = env.get(OUTPUT_DIR_ENV, "").strip() or env.get(LEGACY_OUTPUT_DIR_ENV, "").strip()
     if env_dir:
         return Path(env_dir).expanduser()
     return Path.home() / DEFAULT_OUTPUT_DIRNAME
@@ -857,7 +858,7 @@ def main(argv=None) -> int:
     parser.add_argument("--output", "-o", help="Exact output file (highest precedence)")
     parser.add_argument(
         "--output-dir",
-        help=f"Output directory (overrides ${OUTPUT_DIR_ENV} and ~/{DEFAULT_OUTPUT_DIRNAME}/)",
+        help=f"Output directory (overrides ${OUTPUT_DIR_ENV}, ${LEGACY_OUTPUT_DIR_ENV} and ~/{DEFAULT_OUTPUT_DIRNAME}/)",
     )
     parser.add_argument(
         "--stdout", action="store_true", help="Print only the result; write no files"
