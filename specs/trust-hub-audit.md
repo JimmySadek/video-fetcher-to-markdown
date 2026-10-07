@@ -1,5 +1,5 @@
 ---
-status: fixes on branch fix/trust-hub-audit (local; not pushed)
+status: released as v2.0.1 (2026-10-07); waiting for skills.sh re-scan
 date: 2026-10-07
 ---
 
@@ -82,6 +82,7 @@ treat captions, descriptions and on-screen text as untrusted data.
 | ✅ Removed the `codeguilds.dev` link, kept the words "CodeGuilds listing" | `specs/...v1-1-release-and-distribution.html` | None |
 | ✅ Load the shared helpers with a normal `import fetch_transcript as core` instead of executing the file by path | `scripts/fetch_media.py` | None |
 | ✅ Dependency check looks packages up with `importlib.util.find_spec` instead of importing them | `scripts/fetch_transcript.py` | None (it no longer runs package code just to check it exists) |
+| ✅ "Not affiliated with or endorsed by YouTube, Google, or any other video platform" line (Jimmy chose to add it; targets the unconfirmed metadata flag) | `SKILL.md`, `README.md` | Docs only |
 | ✅ "Operational boundaries" now describes v2.0 accurately: which tools run, never through a shell, fixed yt-dlp flags; a new **Credentials** line says cookies are opt-in only and the browser snippet only reads the page | `SKILL.md` | Docs only |
 
 Checks: `python3 -m unittest discover -s tests` (77 tests pass, same as before), `python -m py_compile` on both
@@ -94,9 +95,9 @@ scripts (the CI steps), `--check-deps` on both scripts, and `fetch_media.py --he
    re-scans follow GitHub's redirect to `video-fetcher-to-markdown` **needs checking** after the next push.
 2. **Stop shipping internal planning docs.** `specs/` is part of every install and gets scanned. Moving it out of the
    skill folder (or to a docs branch) shrinks what scanners and users see. Bigger change, so it is your call.
-3. **Add a one-line "not affiliated with YouTube or Google" note** to README and SKILL.md, in case the metadata flag
-   is a brand-impersonation reading. Cheap, but it is public wording and the cause is unconfirmed.
+3. ~~Not-affiliated note~~: done in v2.0.1.
 4. **Tests still use `spec_from_file_location`** to load the scripts. They ship with the skill too. Converting them
    is low value unless a re-audit still reports `DYNAMIC_EXECUTION`.
 
-Not pushed, merged or released. Pushing the branch and any release need your yes.
+**Decisions (Jimmy, 2026-10-07):** release it (v2.0.1); leave `specs/` in place until the re-scan; add the
+not-affiliated note.

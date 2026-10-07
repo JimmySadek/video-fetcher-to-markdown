@@ -12,6 +12,8 @@ description: >-
 # Video Fetcher to Markdown
 
 Formerly YouTube Fetcher. The skill name stays `youtube-fetcher` so existing installs keep updating.
+An independent open-source tool, not affiliated with or endorsed by YouTube, Google, or
+any other video platform it reads.
 
 Two scripts, one for each kind of source:
 

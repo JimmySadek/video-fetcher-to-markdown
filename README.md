@@ -19,7 +19,10 @@ for other video sites, local Whisper transcription, frames, and the login-wall f
 
 > **Formerly YouTube Fetcher to Markdown.** Existing installs keep working and keep
 > updating: the skill is still named `youtube-fetcher`, and GitHub redirects the old
-> address. `npx skills update` brings you v2.0.0.
+> address. `npx skills update` brings you the latest version.
+
+An independent open-source tool, not affiliated with or endorsed by YouTube, Google, or
+any other video platform it reads.
 
 ## What you get
 
