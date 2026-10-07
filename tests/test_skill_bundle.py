@@ -18,6 +18,8 @@ class SkillBundleTests(unittest.TestCase):
             "LICENSE",
             "requirements.txt",
             "scripts/fetch_transcript.py",
+            "scripts/fetch_media.py",
+            "scripts/browser_media_links.js",
             "assets/banner.png",
             "agents/openai.yaml",
             ".scripts/verify-isolated-install.sh",

@@ -26,6 +26,8 @@ required_files=(
   "LICENSE"
   "requirements.txt"
   "scripts/fetch_transcript.py"
+  "scripts/fetch_media.py"
+  "scripts/browser_media_links.js"
   "assets/banner.png"
   "agents/openai.yaml"
 )
@@ -67,6 +69,7 @@ done
 probe_python="${YOUTUBE_FETCHER_PYTHON:-python3}"
 "$probe_python" "$installed_skill/scripts/fetch_transcript.py" --check-deps
 "$probe_python" "$installed_skill/scripts/fetch_transcript.py" --help > "$probe_root/help.txt"
+"$probe_python" "$installed_skill/scripts/fetch_media.py" --help > "$probe_root/media-help.txt"
 
 # Exercise the copied script from an unrelated cwd, including offline file protection.
 (

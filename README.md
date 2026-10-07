@@ -4,16 +4,18 @@
   <img src="assets/banner.png" alt="YouTube Fetcher to Markdown — archival note skill" width="100%">
 </p>
 
-YouTube video in, structured archival Markdown note out. Capture the transcript,
-creator metadata, description, chapters, actual caption language, and provenance
-in one Obsidian-ready file—without an API key.
+A video link in, a structured archival Markdown note out. Capture the transcript,
+creator metadata, description, chapters, actual language, and provenance in one
+Obsidian-ready file, without an API key. YouTube captions are read directly;
+Instagram, TikTok, X, Vimeo, Facebook and other sites are transcribed on your own
+machine with Whisper, with a contact sheet of frames for short videos.
 
 ```bash
 npx skills add JimmySadek/youtube-fetcher-to-markdown
 ```
 
-Read the [v1.2.0 release notes](https://github.com/JimmySadek/youtube-fetcher-to-markdown/releases/tag/v1.2.0)
-for the new language options, exports, and safer overwrite behavior.
+Read the [v1.3.0 release notes](https://github.com/JimmySadek/youtube-fetcher-to-markdown/releases/tag/v1.3.0)
+for other video sites, local Whisper transcription, frames, and the login-wall fallback.
 
 ## What you get
 
@@ -59,6 +61,16 @@ The creator's description, links, and chapter markers...
 The complete caption text...
 ```
 
+A video from another site gives the same kind of note, tagged `media-transcript`,
+with `platform`, `creator`, `transcription_engine` and `transcription_model` in the
+frontmatter, a **Frames** section that embeds the contact sheet with each tile's
+time, and a Whisper transcript with timestamps:
+
+```text
+~/yt_transcripts/2026-10-07_claude-motion-tips_[instagram-dehp8dpsimi].md
+~/yt_transcripts/2026-10-07_claude-motion-tips_[instagram-dehp8dpsimi].frames.jpg
+```
+
 The YAML frontmatter makes a collection queryable through tools such as
 [Dataview](https://github.com/blacksmithgu/obsidian-dataview), while the Markdown
 remains portable to Logseq, other knowledge bases, and plain text workflows.
@@ -68,7 +80,9 @@ remains portable to Logseq, other knowledge bases, and plain text workflows.
 Most transcript extractors stop at raw caption text. An archival knowledge note
 also needs the source URL, creator, capture date, actual language, description,
 chapters, and a predictable filename. YouTube Fetcher keeps that complete record
-in one local file.
+in one local file. Short social videos often show the real content on screen
+(tool names, prompts, links) rather than saying it, so notes from those sites
+include frames as well as words.
 
 ## Features
 
@@ -83,6 +97,9 @@ in one local file.
 - Plain text, JSON, SRT, and WebVTT export
 - Bounded network requests, useful errors, and optional metadata-free capture
 - No API keys and no hosted service
+- **Other sites (new):** Instagram, TikTok, X, Vimeo, Facebook and anything else `yt-dlp` supports, plus YouTube videos without captions and local files, transcribed on your machine with Whisper
+- **Frames (new):** a contact sheet of the video for reading on-screen text, by default for videos up to 3 minutes
+- **Login walls (new):** a clear exit code and a browser fallback for sites such as Instagram; your browser login is used only when you ask
 
 ## Installation
 
@@ -134,6 +151,9 @@ create the environment in a writable location and pass the full path to
 Put its executable on PATH by activating the environment. Without it, oEmbed
 still supplies title and channel when accessible. The script never installs
 packages automatically. `--no-metadata` skips both metadata providers.
+
+Other video sites need a few more command-line tools (`ffmpeg`, `yt-dlp` and a
+Whisper tool); see [Other video sites](#other-video-sites).
 
 ## Usage
 
@@ -271,6 +291,42 @@ after `--`; put all options before that separator.
 
 Lookalike hosts such as `youtube.com.example.org` are rejected.
 
+## Other video sites
+
+`scripts/fetch_media.py` covers sites without YouTube captions. It downloads the
+media with `yt-dlp`, converts the audio with `ffmpeg`, transcribes it locally with a
+Whisper command-line tool, and saves the same kind of note, with a contact sheet of
+frames for short videos.
+
+```bash
+python3 scripts/fetch_media.py --check-deps
+python3 scripts/fetch_media.py --hint "Claude, HyperFrames" -- "https://www.tiktok.com/@user/video/123"
+python3 scripts/fetch_media.py --stdout --format txt --timestamps -- "/path/to/clip.mp4"
+```
+
+Install the tools once, outside your projects (none are installed automatically):
+
+```bash
+brew install ffmpeg yt-dlp          # or your system package manager
+pipx install mlx-whisper            # Apple Silicon (fast, uses the GPU)
+pipx install openai-whisper         # other machines
+```
+
+Install `yt-dlp` with a package manager that keeps it current: sites change often,
+and an old `yt-dlp` is the most common reason a download is refused. Current
+`yt-dlp` releases need Python 3.10 or newer. The first transcription downloads the
+Whisper model (about 1.5 GB for large-v3-turbo on Apple Silicon). `--hint` passes names and terms Whisper should expect;
+`--lang` fixes the spoken language; `--model` and `--engine` choose the model and tool.
+
+| Exit | Meaning |
+|------|---------|
+| `4` | The site needs a login or blocked the download. Update `yt-dlp` if the message says it is old; use the browser fallback (`scripts/browser_media_links.js`, described in `SKILL.md`); or pass `--cookies-from-browser BROWSER` yourself to reuse your browser login. |
+
+Notes are named `<date>_<title>_[<platform>-<id>].md`; the contact sheet sits next to
+it as `<same name>.frames.jpg`. Downloads go to a temporary folder that is deleted
+afterwards (`--keep-media` keeps a copy next to the note). Whisper transcripts are
+machine transcriptions: names can be misheard and music can produce stray words.
+
 ## Compatibility
 
 The repository follows the portable `SKILL.md` format. The same install command
@@ -288,8 +344,9 @@ agents. Manual users can run the Python script directly.
   twice `--timeout`; individual HTTP requests each have their own timeout.
 - Videos must expose captions. Private, restricted, or caption-disabled videos
   may fail.
-- It does not download video/audio, run Whisper, identify speakers, or inspect
-  visuals. YouTube machine translation is opt-in.
+- `fetch_transcript.py` does not download media. `fetch_media.py` does, then runs
+  Whisper locally and makes a contact sheet; neither identifies speakers or analyses
+  visuals beyond that sheet. YouTube machine translation is opt-in.
 - Captions may contain recognition errors; the archive preserves source text
   rather than silently correcting, summarizing, or treating it as instructions.
 
@@ -303,6 +360,7 @@ agents. Manual users can run the Python script directly.
 | Disabled, private, or restricted captions | Check that the video is publicly playable and captions are accessible. No transcript is fabricated. |
 | Timeout | Check connectivity or increase `--timeout`. This is a per-request connect/read limit, not a whole-command deadline. |
 | No description/title metadata | Captions can still succeed. Check `metadata_source`; use `--no-metadata` when metadata is unnecessary. |
+| Site needs a login / exit `4` | See [Other video sites](#other-video-sites): update `yt-dlp`, use the browser fallback, or pass `--cookies-from-browser` yourself. |
 | Existing file / exit `3` | Choose a different `--output` or explicitly approve replacement with `--force`. |
 | Save error | Check the directory, permissions, and available disk space. Replacing a symbolic-link destination is refused. |
 
@@ -314,13 +372,15 @@ blocking can still prevent capture; passing offline tests cannot guarantee acces
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 -m py_compile scripts/fetch_transcript.py
+python3 -m py_compile scripts/fetch_transcript.py scripts/fetch_media.py
 bash .scripts/verify-isolated-install.sh
 ```
 
 Tests substitute the external caption service while exercising real caption
 objects, CLI formats, language choices, file preservation, failures, and timeout
-configuration. They write only to temporary directories. The installation probe
+configuration. The `fetch_media.py` tests replace `yt-dlp`, `ffmpeg` and Whisper at
+the subprocess boundary, so they need none of them installed. They write only to
+temporary directories. The installation probe
 uses a temporary project; it does not replace your installed skill.
 
 <details>
@@ -332,6 +392,7 @@ uses a temporary project; it does not replace your installed skill.
 | `1` | Invalid video input, fetch failure, or filesystem error |
 | `2` | Missing required dependency or invalid command-line options |
 | `3` | Existing note preserved; overwrite not approved |
+| `4` | `fetch_media.py` only: the site needs a login or blocked the download |
 | `130` | Cancelled by the user |
 
 </details>
@@ -350,7 +411,9 @@ commit and publish its release notes. Verify installation from a fresh clone of
 the public tag. Live caption tests are useful release evidence but are kept out
 of CI because YouTube may block hosted runners.
 
-The [reliability and language record](specs/youtube-fetcher-reliability-and-languages.md)
+The [media providers record](specs/media-providers.md) contains the v1.3
+decisions and verification evidence. The
+[reliability and language record](specs/youtube-fetcher-reliability-and-languages.md)
 contains the v1.2 verification evidence. The older
 [v1.1 distribution record](specs/youtube-fetcher-v1-1-release-and-distribution.html)
 preserves historical channel decisions; dated adoption numbers are snapshots.
