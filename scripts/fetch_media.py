@@ -18,7 +18,6 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import math
 import platform
@@ -30,11 +29,11 @@ import tempfile
 from datetime import date
 from pathlib import Path
 
-_CORE_PATH = Path(__file__).resolve().parent / "fetch_transcript.py"
-_CORE_SPEC = importlib.util.spec_from_file_location("_youtube_fetcher_core", _CORE_PATH)
-core = importlib.util.module_from_spec(_CORE_SPEC)
-assert _CORE_SPEC and _CORE_SPEC.loader
-_CORE_SPEC.loader.exec_module(core)
+# Shared helpers live in the sibling fetch_transcript.py; a plain import, no code loaded by path.
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
+import fetch_transcript as core  # noqa: E402
 
 EXIT_SUCCESS = core.EXIT_SUCCESS
 EXIT_ERROR = core.EXIT_ERROR

@@ -12,6 +12,8 @@ description: >-
 # Video Fetcher to Markdown
 
 Formerly YouTube Fetcher. The skill name stays `youtube-fetcher` so existing installs keep updating.
+An independent open-source tool, not affiliated with or endorsed by YouTube, Google, or
+any other video platform it reads.
 
 Two scripts, one for each kind of source:
 
@@ -195,8 +197,14 @@ and [README.md](README.md#troubleshooting) for installation and failure guidance
   refuse replacement without `--force`. New saves use atomic publication where
   supported, otherwise exclusive creation with cleanup on handled write failures.
   An abrupt termination on the fallback filesystem can leave a partial new file.
-- **Subprocess:** optional local `yt-dlp`, with user configuration, playlist
-  expansion, caching, and downloads disabled for metadata capture.
+- **Subprocess:** only the local tools named under Dependencies, each started
+  with a fixed argument list (never through a shell). `yt-dlp` always runs with
+  `--ignore-config --no-playlist --no-cache-dir` and gets the URL after `--`;
+  metadata capture adds `--skip-download`.
+- **Credentials:** none by default. `--cookies-from-browser` is the only way the
+  scripts touch a browser login, and only when the user asks for it in this
+  conversation. `scripts/browser_media_links.js` only reads links the open page
+  already contains; it sends nothing and changes nothing.
 - **Dependencies:** `youtube-transcript-api` and `requests`; optional `yt-dlp`.
   `fetch_media.py` uses only the standard library plus the command-line tools
   `ffmpeg`, `ffprobe`, `yt-dlp` and `mlx_whisper` or `whisper`. It never installs them.
