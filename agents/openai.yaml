@@ -1,4 +1,4 @@
 interface:
-  display_name: "YouTube Fetcher"
+  display_name: "Video Fetcher to Markdown"
   short_description: "Turn YouTube, Instagram, TikTok and other videos into archival Markdown notes"
   default_prompt: "Use $youtube-fetcher to turn this video into a structured archival Markdown note."

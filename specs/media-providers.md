@@ -64,3 +64,15 @@ local file ◀──────────────────────
   receiving updates. Recommend `brew install yt-dlp`.
 - Not tested live: X, Facebook, YouTube without captions, the `whisper` (non-mlx)
   engine, Windows.
+
+## v2.0.0: renamed to Video Fetcher to Markdown (2026-10-07)
+
+Decided by Jimmy: the repository becomes `JimmySadek/video-fetcher-to-markdown` and the visible name "Video Fetcher to
+Markdown"; v1.3.0 was never tagged, so the media features ship in v2.0.0 together with the rename and a new banner.
+
+- **The skill name stays `youtube-fetcher`.** The skills CLI (1.7.0 source, `updateGlobalSkills`) updates each install
+  with `add <source> --skill <name>`; a new name would make every existing update fail.
+- **The old repository name must never be created again** on this account; GitHub's redirect depends on it being free.
+- `VIDEO_FETCHER_DIR` is the new output setting; `YOUTUBE_FETCHER_DIR` still works (new one wins). `~/yt_transcripts`
+  and the `yt-transcript` tag are unchanged.
+- `video-to-markdown` was rejected: `marcomontalbano/video-to-markdown` (225 stars) is a different, well-known tool.

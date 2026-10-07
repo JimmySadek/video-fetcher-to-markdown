@@ -1,7 +1,7 @@
-# YouTube Fetcher to Markdown
+# Video Fetcher to Markdown
 
 <p align="center">
-  <img src="assets/banner.png" alt="YouTube Fetcher to Markdown — archival note skill" width="100%">
+  <img src="assets/banner.png" alt="Video Fetcher to Markdown: YouTube, TikTok and Instagram links into Markdown notes with frames" width="100%">
 </p>
 
 A video link in, a structured archival Markdown note out. Capture the transcript,
@@ -11,11 +11,15 @@ Instagram, TikTok, X, Vimeo, Facebook and other sites are transcribed on your ow
 machine with Whisper, with a contact sheet of frames for short videos.
 
 ```bash
-npx skills add JimmySadek/youtube-fetcher-to-markdown
+npx skills add JimmySadek/video-fetcher-to-markdown
 ```
 
-Read the [v1.3.0 release notes](https://github.com/JimmySadek/youtube-fetcher-to-markdown/releases/tag/v1.3.0)
+Read the [v2.0.0 release notes](https://github.com/JimmySadek/video-fetcher-to-markdown/releases/tag/v2.0.0)
 for other video sites, local Whisper transcription, frames, and the login-wall fallback.
+
+> **Formerly YouTube Fetcher to Markdown.** Existing installs keep working and keep
+> updating: the skill is still named `youtube-fetcher`, and GitHub redirects the old
+> address. `npx skills update` brings you v2.0.0.
 
 ## What you get
 
@@ -79,7 +83,7 @@ remains portable to Logseq, other knowledge bases, and plain text workflows.
 
 Most transcript extractors stop at raw caption text. An archival knowledge note
 also needs the source URL, creator, capture date, actual language, description,
-chapters, and a predictable filename. YouTube Fetcher keeps that complete record
+chapters, and a predictable filename. Video Fetcher to Markdown keeps that complete record
 in one local file. Short social videos often show the real content on screen
 (tool names, prompts, links) rather than saying it, so notes from those sites
 include frames as well as words.
@@ -106,13 +110,13 @@ include frames as well as words.
 ### Install the skill
 
 ```bash
-npx skills add JimmySadek/youtube-fetcher-to-markdown
+npx skills add JimmySadek/video-fetcher-to-markdown
 ```
 
 Or clone the canonical repository:
 
 ```bash
-git clone https://github.com/JimmySadek/youtube-fetcher-to-markdown.git
+git clone https://github.com/JimmySadek/video-fetcher-to-markdown.git
 ```
 
 ### Install runtime dependencies
@@ -170,7 +174,7 @@ The first configured option wins:
 
 1. `--output` for one exact file
 2. `--output-dir` for this run
-3. `YOUTUBE_FETCHER_DIR` for a persistent directory
+3. `VIDEO_FETCHER_DIR` for a persistent directory (the older `YOUTUBE_FETCHER_DIR` still works)
 4. `~/yt_transcripts/` by default
 
 ```bash
@@ -178,7 +182,7 @@ The first configured option wins:
 python3 scripts/fetch_transcript.py URL --output-dir ~/Notes/MyVault
 
 # Set a persistent default
-export YOUTUBE_FETCHER_DIR=~/Notes/MyVault
+export VIDEO_FETCHER_DIR=~/Notes/MyVault
 python3 scripts/fetch_transcript.py URL
 
 # Save to one exact file
@@ -400,8 +404,14 @@ uses a temporary project; it does not replace your installed skill.
 ### Maintaining and releasing
 
 `main` is the canonical development branch. The automated `master` mirror is
-retained for older raw-file links; do not delete it or develop on it. See
-[GitHub releases](https://github.com/JimmySadek/youtube-fetcher-to-markdown/releases)
+retained for older raw-file links; do not delete it or develop on it.
+
+The repository was renamed from `youtube-fetcher-to-markdown` on 2026-10-07. **Never
+create a new repository named `youtube-fetcher-to-markdown` on this account:** it would
+take over the old address and break GitHub's redirect for every existing install, clone
+and link. Keep the skill name `youtube-fetcher` for the same reason: `npx skills update`
+re-adds each install by that name. See
+[GitHub releases](https://github.com/JimmySadek/video-fetcher-to-markdown/releases)
 for tagged versions and upgrade notes.
 
 For a release, run the local checks above and the isolated install probe, open a
