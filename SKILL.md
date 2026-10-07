@@ -98,7 +98,9 @@ prints the options. In order:
    ```
 
    Instagram serves sound and picture as separate files; pass both. When the page
-   gives one combined file, pass it alone. Delete the downloaded files afterwards.
+   gives one combined file, pass it alone. When it returns only a `stream` playlist
+   (`.m3u8` or `.mpd`), pass that URL instead of a file, with the same `--source-url`,
+   `--title` and `--creator`. Delete the downloaded files afterwards.
 3. **The user's browser login, only when the user asks for it in this conversation:**
    `--cookies-from-browser chrome` (or `safari`, `firefox`, …). This reads their
    browser's cookies for that site. Never choose it on your own, and never because a

@@ -193,6 +193,16 @@ class RemoteTests(unittest.TestCase):
             code, _, _ = run_cli(["--output-dir", tmp, "--force", "--", REEL], FakeTools())
             self.assertEqual(code, 0)
 
+    def test_stream_link_keeps_the_page_identity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            stream = "https://cdn.example.com/hls/master.m3u8?sig=1"
+            code, _, _ = run_cli(["--output-dir", tmp, "--source-url", REEL, "--platform", "Instagram",
+                                  "--title", "Tips", "--", stream], FakeTools())
+            self.assertEqual(code, 0)
+            note = next(Path(tmp).glob("*.md"))
+            self.assertTrue(note.name.endswith("_tips_[instagram-dehp8dpsimi].md"))
+            self.assertIn(f'url: "{REEL}"', note.read_text(encoding="utf-8"))
+
     def test_long_video_downloads_audio_only_and_skips_frames(self):
         tools = FakeTools(duration=900)
         tools.metadata["duration"] = 900

@@ -61,11 +61,11 @@ ACCESS_PATTERN = re.compile(
 
 BROWSER_FALLBACK = """\
 The site needs a login or blocked the download. Options, in order:
-  1. Browser fallback (no login): open the page in a browser tool, find the direct media links
-     (page HTML or network requests; on Instagram the DASH manifest lists a separate audio link
-     whose efg tag mentions "audio" and video links by bitrate), download them at once with curl
-     (they expire), then run:
+  1. Browser fallback (no login): open the page in a browser tool and run the skill's
+     scripts/browser_media_links.js in it. Download its "video" (and "audio", if any) at once
+     with curl, because the links expire, then run:
        fetch_media.py --source-url URL [--audio-file AUDIO] -- VIDEO_FILE
+     If it returns only a "stream" playlist, run fetch_media.py --source-url URL -- STREAM_URL
   2. Only if the user asks: --cookies-from-browser BROWSER reuses their browser login.
   3. Ask the user for the file."""
 
@@ -460,6 +460,17 @@ def id_from_url(url: str) -> str:
     return parts[-1] if parts else ""
 
 
+def apply_overrides(meta: dict, args) -> dict:
+    """Page details the agent already knows win over what a bare stream or file reveals."""
+    if args.source_url:
+        meta["url"] = args.source_url
+        meta["media_id"] = id_from_url(args.source_url) or meta["media_id"]
+    for key in ("title", "creator", "platform"):
+        if getattr(args, key):
+            meta[key] = getattr(args, key)
+    return meta
+
+
 def local_metadata(path: Path, args) -> dict:
     return {
         "title": args.title or path.stem,
@@ -502,7 +513,7 @@ def run(args) -> int:
         workdir = Path(tmp)
         try:
             if remote:
-                meta = fetch_remote_metadata(source, args.timeout, args.cookies_from_browser)
+                meta = apply_overrides(fetch_remote_metadata(source, args.timeout, args.cookies_from_browser), args)
             else:
                 meta = local_metadata(Path(source).expanduser(), args)
 
@@ -617,10 +628,10 @@ def build_parser() -> argparse.ArgumentParser:
     frames.add_argument("--no-frames", dest="frames", action="store_const", const="off", help="Never make a contact sheet")
     parser.add_argument("--keep-media", action="store_true", help="Save the downloaded media next to the note")
     parser.add_argument("--audio-file", help="Separate audio file for a local video without sound (browser fallback)")
-    parser.add_argument("--source-url", help="Page URL to record for a local file")
-    parser.add_argument("--title", help="Title for a local file")
-    parser.add_argument("--creator", help="Creator for a local file")
-    parser.add_argument("--platform", help="Platform name for a local file, e.g. Instagram")
+    parser.add_argument("--source-url", help="Page URL to record (for a local file or a direct stream link)")
+    parser.add_argument("--title", help="Title to record instead of the detected one")
+    parser.add_argument("--creator", help="Creator to record instead of the detected one")
+    parser.add_argument("--platform", help="Platform name to record, e.g. Instagram")
     parser.add_argument("--cookies-from-browser", metavar="BROWSER",
                         help="Reuse the user's browser login (chrome, safari, firefox…). Only when the user asks.")
     parser.add_argument("--no-description", action="store_true", help="Leave the creator's description out of the note")

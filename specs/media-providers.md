@@ -42,7 +42,7 @@ local file ◀──────────────────────
 
 ## Verification (2026-10-07)
 
-- 75 tests pass (61 existing + 14 new) on Python 3.12 and on Python 3.8 (uv, minimum
+- 76 tests pass (61 existing + 15 new) on Python 3.12 and on Python 3.8 (uv, minimum
   supported `youtube-transcript-api` range). The new tests replace yt-dlp, ffmpeg and
   Whisper at the subprocess boundary, so CI needs none of them.
 - `.scripts/verify-isolated-install.sh` passes with skills CLI 1.5.23 and now checks
@@ -51,8 +51,16 @@ local file ◀──────────────────────
   fallback (`browser_media_links.js` in the built-in browser, curl, `--audio-file`)
   produces a note, a 24-tile contact sheet and a correct transcript; `--hint Claude`
   fixed "cloud" → "Claude". TikTok works directly (note + frames).
-- ⚠️ Vimeo `76979871` fails with HTTP 401 on the installed yt-dlp 2026.03.17
-  (204 days old). Most likely a stale extractor; the exit-4 message now says so.
-  Not re-tested after an update (updating yt-dlp needs Jimmy's yes).
+- yt-dlp updated 2026.03.17 → 2026.08.19 (Jimmy's yes). After the update the Instagram
+  reel downloads directly, no browser needed. Vimeo `76979871` now reports "only works
+  when logged-in" (a real Vimeo change), and its page shows "This video is
+  processing" in a browser too, so it could not be captured either way.
+- The browser snippet failed once: Instagram escapes `%` as `\u0025` in page HTML, so
+  quality tags were unreadable and a random video rendition was picked. Fixed with a
+  generic `\uXXXX` unescape; it now returns audio + q90 video from HTML alone. It also
+  returns `.m3u8`/`.mpd` playlists as `stream`, which `fetch_media.py` accepts with
+  `--source-url`, `--title`, `--creator` overrides (covered by a test).
+- yt-dlp warns that Python 3.10 support is deprecated: its pyenv 3.10 install will stop
+  receiving updates. Recommend `brew install yt-dlp`.
 - Not tested live: X, Facebook, YouTube without captions, the `whisper` (non-mlx)
   engine, Windows.
