@@ -361,6 +361,10 @@ def _fetch_metadata_oembed(video_id: str, timeout: float = DEFAULT_TIMEOUT) -> d
 def _format_upload_date(raw: str) -> str:
     """Convert yt-dlp date format (YYYYMMDD) to readable (YYYY-MM-DD)."""
     if raw and len(raw) == 8:
+        if not raw.isdigit():
+            # Not a real yt-dlp date: drop it rather than writing a bogus
+            # ``abcd-ef-gh`` value into the note frontmatter.
+            return ""
         return f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
     return raw
 
