@@ -195,5 +195,15 @@ class MarkdownSafetyTests(unittest.TestCase):
         self.assertIn("- `01:05` Chapter Injected", section)
 
 
+class UploadDateTests(unittest.TestCase):
+    def test_valid_yt_dlp_date_is_reformatted(self):
+        self.assertEqual(youtube_fetcher._format_upload_date("20260803"), "2026-08-03")
+
+    def test_non_digit_date_is_dropped_not_mangled(self):
+        self.assertEqual(youtube_fetcher._format_upload_date("abcdefgh"), "")
+        self.assertEqual(youtube_fetcher._format_upload_date("2026-8-03"), "2026-8-03")
+        self.assertEqual(youtube_fetcher._format_upload_date(""), "")
+
+
 if __name__ == "__main__":
     unittest.main()
